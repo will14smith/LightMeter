@@ -33,6 +33,7 @@ void setup() {
   display.setTextColor(WHITE);
 
   displayHeader();
+  displayFooter();
 
   Mode* mode = new ISOMode(220, 6400);
   mode->displayHeader(display, 0,0);
@@ -48,6 +49,40 @@ void displayHeader() {
   drawBatteryText(114, 1, 95);
   drawBattery(115, 1, 95);
 
+  display.display();
+}
+
+#define FOOTER_HEIGHT 10
+#define FOOTER_TOP (SSD1306_LCDHEIGHT - FOOTER_HEIGHT)
+void displayFooter() {
+  // text = 1234K or 12,345,678lx
+  char text[13];
+  
+  display.drawLine(0, FOOTER_TOP-1, display.width()-1, FOOTER_TOP-1, WHITE);
+
+  sprintf(text, "%iK", 5500);
+
+  int16_t x1, y1;
+  uint16_t w, h;
+  display.getTextBounds(text, 0, 0, &x1, &y1, &w, &h);  
+  
+  int offset = 2;
+  
+  display.setCursor(offset, FOOTER_TOP + 2);
+  display.print(text);
+    
+  offset += w;
+     
+  offset += 1;
+  display.drawLine(offset, FOOTER_TOP + 1, offset, FOOTER_TOP + FOOTER_HEIGHT - 1, WHITE);
+  offset += 2;
+
+  // TODO format with commas
+  sprintf(text, "%ilx", 100000);
+  
+  display.setCursor(offset, FOOTER_TOP + 2);
+  display.print(text);
+  
   display.display();
 }
 
