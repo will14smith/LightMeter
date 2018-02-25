@@ -3,6 +3,8 @@
 #include "src/Adafruit_GFX/Adafruit_GFX.h"
 #include "src/Adafruit_SSD1306/Adafruit_SSD1306.h"
 #include "src/modes.h"
+#include "src/sensors_mux.h"
+#include "src/sensors_lux.h"
 
 // If using software SPI (the default case):
 #define OLED_MOSI   3
@@ -16,6 +18,9 @@ Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 #error("Height incorrect, please fix Adafruit_SSD1306.h!");
 #endif
 
+SensorMux mux;
+SensorLux lux(&mux, 0);
+
 /*
  * ISO values are encoded as: X is ISO X
  * Exposure values are encoded as: +X is 1/X, -X is (X/10)"
@@ -24,6 +29,9 @@ Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 
 void setup() {
   Serial.begin(9600);
+
+  mux.begin();
+  lux.begin();
 
   display.begin(SSD1306_SWITCHCAPVCC);
   display.clearDisplay();
@@ -77,8 +85,10 @@ void displayFooter() {
   display.drawLine(offset, FOOTER_TOP + 1, offset, FOOTER_TOP + FOOTER_HEIGHT - 1, WHITE);
   offset += 2;
 
+  ReadingLux lux_reading = lux.read();
+
   // TODO format with commas
-  sprintf(text, "%ilx", 100000);
+  sprintf(text, "%ilx", lux_reading.value);
   
   display.setCursor(offset, FOOTER_TOP + 2);
   display.print(text);
