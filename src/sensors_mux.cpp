@@ -36,9 +36,14 @@ void SensorMux::set(uint8_t state)
   if (this->_state == state)
     return;
 
+  Serial.print("setting mux state ");
+  Serial.println(state);
+
   Wire.beginTransmission(TCAADDR);
   Wire.write(state);
   Wire.endTransmission();
+
+  Serial.print("setting mux state - completed.");
 
   this->_state = state;
 }
