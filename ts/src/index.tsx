@@ -1,12 +1,17 @@
 import WindowManager from "./WindowManager";
-import HomeWindow from "./windows/HomeWindow";
 
 const root = document.getElementById("root") as HTMLElement;
-const wm = new WindowManager(createCanvas(), new HomeWindow());
+const wm = new WindowManager(createCanvas());
 
 createButton("Up", () => wm.up());
 createButton("Down", () => wm.down());
 createButton("Press", () => wm.press());
+
+requestAnimationFrame(loop);
+function loop() {
+  wm.loop();
+  requestAnimationFrame(loop);
+}
 
 function createCanvas() {
   const canvas = document.createElement("canvas");

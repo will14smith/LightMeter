@@ -1,51 +1,58 @@
-export enum Action {
-  up,
-  down,
-  press
+import {
+  Window,
+  Action,
+  WindowManagerInterface,
+  WindowType,
+  BoundingBox
+} from "./types";
+
+import HomeWindow from "./windows/HomeWindow";
+
+function windowFactory(type: WindowType): Window {
+  switch (type) {
+    case WindowType.Home:
+      return new HomeWindow();
+
+    default:
+      throw new Error("Unknown window type");
+  }
 }
 
-export interface BoundingBox {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
+export default class WindowManager implements WindowManagerInterface {
+  public statusBarBounds: BoundingBox = { x: 0, y: 0, w: 105, h: 10 };
+  public windowBounds: BoundingBox = { x: 0, y: 11, w: 128, h: 54 };
 
-export interface Window {
-  activate(wm: WindowManager): void;
-  deactive(): void;
-
-  handle(action: Action): void;
-
-  renderStatusBar(ctx: CanvasRenderingContext2D, bounds: BoundingBox): void;
-  renderWindow(ctx: CanvasRenderingContext2D, bounds: BoundingBox): void;
-}
-
-export default class WindowManager {
   private ctx: CanvasRenderingContext2D;
   private window: Window;
 
-  constructor(ctx: CanvasRenderingContext2D, window: Window) {
+  constructor(ctx: CanvasRenderingContext2D) {
     this.ctx = ctx;
-    this.window = window;
-    this.window.activate(this);
-    this.render();
+    this.setWindow(WindowType.Home);
   }
 
   up() {
-    this.window.handle(Action.up);
+    this.window.handle(Action.Up);
   }
   down() {
-    this.window.handle(Action.down);
+    this.window.handle(Action.Down);
   }
   press() {
-    this.window.handle(Action.press);
+    this.window.handle(Action.Press);
   }
 
-  setWindow(window: Window) {
-    this.window.deactive();
-    this.window = window;
-    this.window.activate(this);
+  loop() {
+    this.window.loop();
+  }
+
+  setWindow(windowType: WindowType) {
+    if (this.window) {
+      this.window.deactive();
+    }
+
+    this.window = windowFactory(WindowType.Home);
+    this.window.activate(this, this.ctx);
+
+    this.render(true);
   }
 
   render(full: boolean = true) {
@@ -54,11 +61,8 @@ export default class WindowManager {
       this.renderGlobalStatusBar();
     }
 
-    const windowStatusBoundingBox = { x: 0, y: 0, w: 105, h: 10 };
-    const windowBoundingBox = { x: 0, y: 11, w: 128, h: 54 };
-
-    this.window.renderStatusBar(this.ctx, windowStatusBoundingBox);
-    this.window.renderWindow(this.ctx, windowBoundingBox);
+    this.window.renderStatusBar();
+    this.window.renderWindow();
   }
 
   private clearScreen() {

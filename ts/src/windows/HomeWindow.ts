@@ -1,21 +1,24 @@
-import WindowManager, { Window, Action, BoundingBox } from "../WindowManager";
+import { Window, Action, WindowManagerInterface, WindowType } from "../types";
 
 // TODO create actual windows
 
 export default class HomeWindow implements Window {
   private static items = [
-    { text: "Exposure", windowFactory: () => new HomeWindow() },
-    { text: "Aparture", windowFactory: () => new HomeWindow() },
-    { text: "ISO", windowFactory: () => new HomeWindow() },
-    { text: "Meter", windowFactory: () => new HomeWindow() },
-    { text: "Settings", windowFactory: () => new HomeWindow() }
+    { text: "Exposure", windowType: WindowType.Home },
+    { text: "Aparture", windowType: WindowType.Home },
+    { text: "ISO", windowType: WindowType.Home },
+    { text: "Meter", windowType: WindowType.Home },
+    { text: "Settings", windowType: WindowType.Home }
   ];
 
-  private wm: WindowManager;
+  private wm: WindowManagerInterface;
+  private ctx: CanvasRenderingContext2D;
+
   private index: number;
 
-  activate(newwm: WindowManager): void {
+  activate(newwm: WindowManagerInterface, ctx: CanvasRenderingContext2D): void {
     this.wm = newwm;
+    this.ctx = ctx;
     this.index = 0;
   }
   deactive(): void {
@@ -23,23 +26,25 @@ export default class HomeWindow implements Window {
   }
 
   handle(action: Action): void {
-    if (action === Action.down) {
-      this.index = (this.index + 1) % 5;
-    }
-    if (action === Action.up) {
-      this.index = (this.index + 4) % 5;
-    }
-    if (action === Action.press) {
-      const newWindow = HomeWindow.items[this.index].windowFactory();
+    if (action === Action.Down) {
+      this.setIndex((this.index + 1) % 5);
+    } else if (action === Action.Up) {
+      this.setIndex((this.index + 4) % 5);
+    } else if (action === Action.Press) {
+      const newWindow = HomeWindow.items[this.index].windowType;
       this.wm.setWindow(newWindow);
     }
-
-    this.wm.render();
   }
 
-  renderStatusBar(ctx: CanvasRenderingContext2D, bounds: BoundingBox): void {
+  loop() {
+    // no-op
+  }
+
+  renderStatusBar(): void {
+    const ctx = this.ctx;
+
     ctx.save();
-    ctx.translate(bounds.x, bounds.y);
+    ctx.translate(this.wm.statusBarBounds.x, this.wm.statusBarBounds.y);
 
     // status text
     ctx.fillStyle = "white";
@@ -56,23 +61,53 @@ export default class HomeWindow implements Window {
     ctx.restore();
   }
 
-  renderWindow(ctx: CanvasRenderingContext2D, bounds: BoundingBox): void {
+  renderWindow(): void {
+    const ctx = this.ctx;
+
     ctx.save();
-    ctx.translate(bounds.x, bounds.y);
+    ctx.translate(this.wm.windowBounds.x, this.wm.windowBounds.y);
+
+    for (var i = 0; i < HomeWindow.items.length; i++) {
+      this.renderItem(i, false);
+    }
+
+    ctx.restore();
+  }
+
+  private setIndex(index: number) {
+    const prevIndex = this.index;
+    this.index = index;
+
+    const ctx = this.ctx;
+
+    ctx.save();
+    ctx.translate(this.wm.windowBounds.x, this.wm.windowBounds.y);
+
+    this.renderItem(prevIndex, true);
+    this.renderItem(index, true);
+
+    ctx.restore();
+  }
+
+  private renderItem(index: number, full: boolean = false) {
+    const item = HomeWindow.items[index];
+
+    const text = `${this.index === index ? "> " : index + 1 + "."} ${
+      item.text
+    }`;
+
+    const ctx = this.ctx;
+
+    if (full) {
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, index * 10, this.wm.windowBounds.w, 10);
+    }
 
     ctx.fillStyle = "white";
     ctx.font = "10px sans-serif";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
 
-    for (var i = 0; i < HomeWindow.items.length; i++) {
-      const item = HomeWindow.items[i];
-
-      const text = `${this.index === i ? "> " : i + 1 + "."} ${item.text}`;
-
-      ctx.fillText(text, 2, i * 10);
-    }
-
-    ctx.restore();
+    ctx.fillText(text, 2, index * 10);
   }
 }
