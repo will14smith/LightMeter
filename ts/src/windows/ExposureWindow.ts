@@ -30,7 +30,7 @@ export default class ExposureWindow implements Window {
 
     // status text
     ctx.fillStyle = "white";
-    ctx.font = "8px sans-serif";
+    ctx.font = "8px monospace";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
     ctx.fillText("Exposure", 2, 1);

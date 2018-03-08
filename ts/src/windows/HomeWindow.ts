@@ -13,6 +13,8 @@ export default class HomeWindow implements Window {
   private ctx: CanvasRenderingContext2D;
 
   private index: number;
+  private flash: boolean;
+  private lastFlash: number;
 
   activate(newwm: WindowManagerInterface, ctx: CanvasRenderingContext2D): void {
     this.wm = newwm;
@@ -35,7 +37,23 @@ export default class HomeWindow implements Window {
   }
 
   loop() {
-    // no-op
+    if (!this.lastFlash) {
+      this.lastFlash = Date.now();
+      return;
+    }
+
+    if (Date.now() - this.lastFlash < 500) {
+      return;
+    }
+
+    this.lastFlash = Date.now();
+    this.flash = !this.flash;
+
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.translate(this.wm.windowBounds.x, this.wm.windowBounds.y);
+    this.renderItem(this.index, true);
+    ctx.restore();
   }
 
   renderStatusBar(): void {
@@ -46,7 +64,7 @@ export default class HomeWindow implements Window {
 
     // status text
     ctx.fillStyle = "white";
-    ctx.font = "8px sans-serif";
+    ctx.font = "8px monospace";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
     ctx.fillText("Menu", 2, 1);
@@ -73,6 +91,9 @@ export default class HomeWindow implements Window {
   }
 
   private setIndex(index: number) {
+    this.lastFlash = Date.now();
+    this.flash = false;
+
     const prevIndex = this.index;
     this.index = index;
 
@@ -90,9 +111,9 @@ export default class HomeWindow implements Window {
   private renderItem(index: number, full: boolean = false) {
     const item = HomeWindow.items[index];
 
-    const text = `${this.index === index ? "> " : index + 1 + "."} ${
-      item.text
-    }`;
+    const text = `${
+      this.index === index ? (this.flash ? "  " : "> ") : index + 1 + "."
+    } ${item.text}`;
 
     const ctx = this.ctx;
 
@@ -102,10 +123,10 @@ export default class HomeWindow implements Window {
     }
 
     ctx.fillStyle = "white";
-    ctx.font = "10px sans-serif";
+    ctx.font = "10px monospace";
     ctx.textAlign = "left";
-    ctx.textBaseline = "top";
+    ctx.textBaseline = "middle";
 
-    ctx.fillText(text, 2, index * 10);
+    ctx.fillText(text, 2, index * 10 + 5);
   }
 }

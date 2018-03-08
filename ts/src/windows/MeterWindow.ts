@@ -30,7 +30,7 @@ export default class MeterWindow implements Window {
 
     // status text
     ctx.fillStyle = "white";
-    ctx.font = "8px sans-serif";
+    ctx.font = "8px monospace";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
     ctx.fillText("Meter", 2, 1);
