@@ -7,11 +7,26 @@ import {
 } from "./types";
 
 import HomeWindow from "./windows/HomeWindow";
+import ExposureWindow from "./windows/ExposureWindow";
+import ApertureWindow from "./windows/ApertureWindow";
+import ISOWindow from "./windows/ISOWindow";
+import MeterWindow from "./windows/MeterWindow";
+import SettingsWindow from "./windows/SettingsWindow";
 
 function windowFactory(type: WindowType): Window {
   switch (type) {
     case WindowType.Home:
       return new HomeWindow();
+    case WindowType.Exposure:
+      return new ExposureWindow();
+    case WindowType.Aperture:
+      return new ApertureWindow();
+    case WindowType.ISO:
+      return new ISOWindow();
+    case WindowType.Meter:
+      return new MeterWindow();
+    case WindowType.Settings:
+      return new SettingsWindow();
 
     default:
       throw new Error("Unknown window type");
@@ -49,7 +64,7 @@ export default class WindowManager implements WindowManagerInterface {
       this.window.deactive();
     }
 
-    this.window = windowFactory(WindowType.Home);
+    this.window = windowFactory(windowType);
     this.window.activate(this, this.ctx);
 
     this.render(true);

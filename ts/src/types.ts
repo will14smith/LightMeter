@@ -23,7 +23,12 @@ export interface Window {
 }
 
 export enum WindowType {
-  Home
+  Home,
+  Exposure,
+  Aperture,
+  ISO,
+  Meter,
+  Settings
 }
 
 export interface WindowManagerInterface {

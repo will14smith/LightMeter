@@ -1,14 +1,12 @@
 import { Window, Action, WindowManagerInterface, WindowType } from "../types";
 
-// TODO create actual windows
-
 export default class HomeWindow implements Window {
   private static items = [
-    { text: "Exposure", windowType: WindowType.Home },
-    { text: "Aparture", windowType: WindowType.Home },
-    { text: "ISO", windowType: WindowType.Home },
-    { text: "Meter", windowType: WindowType.Home },
-    { text: "Settings", windowType: WindowType.Home }
+    { text: "Exposure", windowType: WindowType.Exposure },
+    { text: "Aperture", windowType: WindowType.Aperture },
+    { text: "ISO", windowType: WindowType.ISO },
+    { text: "Meter", windowType: WindowType.Meter },
+    { text: "Settings", windowType: WindowType.Settings }
   ];
 
   private wm: WindowManagerInterface;
