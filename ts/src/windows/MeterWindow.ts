@@ -1,4 +1,5 @@
 import { Window, Action, WindowManagerInterface, WindowType } from "../types";
+import sensor from "../sensor";
 
 export default class MeterWindow implements Window {
   private wm: WindowManagerInterface;
@@ -19,7 +20,20 @@ export default class MeterWindow implements Window {
   }
 
   loop() {
-    // no-op
+    if (Date.now() - sensor.lastRead < 100) {
+      return;
+    }
+
+    const ctx = this.ctx;
+    ctx.fillStyle = "black";
+    ctx.fillRect(
+      this.wm.windowBounds.x,
+      this.wm.windowBounds.y,
+      this.wm.windowBounds.w,
+      this.wm.windowBounds.h
+    );
+
+    this.renderWindow();
   }
 
   renderStatusBar(): void {
@@ -48,6 +62,14 @@ export default class MeterWindow implements Window {
 
     ctx.save();
     ctx.translate(this.wm.windowBounds.x, this.wm.windowBounds.y);
+
+    ctx.fillStyle = "white";
+    ctx.font = "20px monospace";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+
+    ctx.fillText(`${Math.round(sensor.lux)} lx`, 0, 0);
+    ctx.fillText(`${Math.round(sensor.temperature)} K`, 0, 20);
 
     ctx.restore();
   }
