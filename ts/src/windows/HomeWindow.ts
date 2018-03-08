@@ -28,7 +28,7 @@ export default class HomeWindow implements Window {
       this.setIndex((this.index + 1) % 5);
     } else if (action === Action.Up) {
       this.setIndex((this.index + 4) % 5);
-    } else if (action === Action.Press) {
+    } else if (action === Action.Press || action === Action.LongPress) {
       const newWindow = HomeWindow.items[this.index].windowType;
       this.wm.setWindow(newWindow);
     }

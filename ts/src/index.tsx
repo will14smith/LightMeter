@@ -1,11 +1,15 @@
 import WindowManager from "./WindowManager";
+import { Action } from "./types";
 
 const root = document.getElementById("root") as HTMLElement;
 const wm = new WindowManager(createCanvas());
 
-createButton("Up", () => wm.up());
-createButton("Down", () => wm.down());
-createButton("Press", () => wm.press());
+root.appendChild(document.createElement("br"));
+
+createButton("Up", () => wm.handle(Action.Up));
+createButton("Down", () => wm.handle(Action.Down));
+createButton("Press", () => wm.handle(Action.Press));
+createButton("LongPress", () => wm.handle(Action.LongPress));
 
 requestAnimationFrame(loop);
 function loop() {

@@ -1,7 +1,8 @@
 export enum Action {
   Up,
   Down,
-  Press
+  Press,
+  LongPress
 }
 
 export interface BoundingBox {

@@ -13,7 +13,7 @@ export default class ApertureWindow implements Window {
   }
 
   handle(action: Action): void {
-    if (action === Action.Press) {
+    if (action === Action.LongPress) {
       this.wm.setWindow(WindowType.Home);
     }
   }

@@ -45,14 +45,8 @@ export default class WindowManager implements WindowManagerInterface {
     this.setWindow(WindowType.Home);
   }
 
-  up() {
-    this.window.handle(Action.Up);
-  }
-  down() {
-    this.window.handle(Action.Down);
-  }
-  press() {
-    this.window.handle(Action.Press);
+  handle(action: Action) {
+    this.window.handle(action);
   }
 
   loop() {
